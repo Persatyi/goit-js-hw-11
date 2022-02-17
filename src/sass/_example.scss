@@ -1,27 +1,66 @@
-.example {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell,
-    'Open Sans', 'Helvetica Neue', sans-serif;
-  line-height: 1.5;
-  background-color: #fff;
-  color: #424242;
-  max-width: 960px;
-  padding: 16px;
+img {
+  display: block;
 }
 
-.example code {
-  font-family: monospace;
-  font-size: 16px;
-  font-weight: 700;
-  background-color: #009688;
-  color: #fff;
-  padding: 2px 6px;
+.container {
+  padding-top: 50px;
+  margin: 0 auto;
+  width: 1280px;
+}
+
+.search-form {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: fixed;
+  top: 0;
+  right: 0;
+  left: 0;
+  height: 50px;
+  background-color: rgb(44, 44, 83);
+}
+
+.search-image {
+  height: 25px;
+  border: none;
   border-radius: 2px;
+  outline: none;
 }
 
-.example .background {
-  height: 240px;
-  // Путь к изображениям из SASS-файла всегда такой, как из папки css
-  background-image: url('../images/demo.jpg');
-  background-size: cover;
-  background-position: center;
+.load-more,
+.search-image-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 25px;
+  width: 100px;
+  border-radius: 2px;
+  border-color: transparent;
+}
+
+.load-more:hover,
+.load-more:focus,
+.search-image-btn:hover,
+.search-image-btn:focus {
+  background-color: darkgrey;
+}
+
+.gallery {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.photo-card {
+  margin: 10px;
+}
+
+.load-more {
+  margin: 0 auto;
+}
+
+.is-hidden {
+  display: none;
+  visibility: hidden;
+  opacity: 0;
+  pointer-events: none;
 }
