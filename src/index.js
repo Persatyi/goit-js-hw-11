@@ -9,17 +9,20 @@ const loadMoreBtnRef = document.querySelector('.load-more');
 
 searchFormRef.addEventListener('submit', searchPicture);
 
+let inputValue = '';
+let page = 1;
+
 function searchPicture(e) {
   e.preventDefault();
 
-  const inputValue = searchInputRef.value.trim();
+  inputValue = searchInputRef.value.trim();
 
   if (!inputValue) {
     clearPage();
     return;
   }
 
-  fetchImages(inputValue)
+  fetchImages(inputValue, page)
     .then(response => {
       renderGallery(response.hits);
       Notify.success('Hooray! We found totalHits images.');
@@ -51,15 +54,23 @@ function renderGallery(array) {
             </div>`;
     })
     .join('');
-  galleryRef.insertAdjacentHTML('afterbegin', markup);
-
-  loadMoreBtnRef.addEventListener('click', loadMorePictures);
+  galleryRef.insertAdjacentHTML('beforeend', markup);
 }
 
 function clearPage() {
   galleryRef.innerHTML = '';
 }
 
+loadMoreBtnRef.addEventListener('click', loadMorePictures);
+
 function loadMorePictures() {
-  renderGallery();
+  page += 1;
+  fetchImages(inputValue, page)
+    .then(response => {
+      renderGallery(response.hits);
+      Notify.success('Hooray! We found totalHits images.');
+    })
+    .catch(error =>
+      Notify.failure('Sorry, there are no images matching your search query. Please try again.'),
+    );
 }
