@@ -25,6 +25,7 @@ async function searchPicture(e) {
     return;
   }
 
+  page = 1;
   hideLoadMoreBtn();
   clearPage();
 
