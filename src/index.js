@@ -1,5 +1,6 @@
 import './sass/main.scss';
 import SimpleLightbox from 'simplelightbox';
+var debounce = require('debounce');
 import 'simplelightbox/dist/simple-lightbox.min.css';
 import { Notify } from 'notiflix/build/notiflix-notify-aio';
 import { fetchImages } from './js/get-images';
@@ -13,6 +14,7 @@ searchFormRef.addEventListener('submit', searchPicture);
 
 let inputValue = '';
 let page = 1;
+let totalHits = 0;
 
 async function searchPicture(e) {
   e.preventDefault();
@@ -28,6 +30,7 @@ async function searchPicture(e) {
   page = 1;
   hideLoadMoreBtn();
   clearPage();
+  window.addEventListener('scroll', debounce(onScroll, 200));
 
   try {
     const response = await fetchImages(inputValue, page);
@@ -95,6 +98,7 @@ function loadMorePictures() {
 
       if (response.hits.length < 40) {
         hideLoadMoreBtn();
+        window.removeEventListener('scroll', onScroll);
         Notify.info("We're sorry, but you've reached the end of search results.");
         return;
       }
@@ -119,3 +123,17 @@ const lightbox = new SimpleLightbox('.photo-card a', {
   captionsData: 'alt',
   captionDelay: 250,
 });
+
+function onScroll(e) {
+  const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+  const cardHeight = galleryRef.getBoundingClientRect();
+
+  if (cardHeight.height - 700 < scrollTop) {
+    loadMorePictures();
+  }
+}
+
+// window.scrollBy({
+//   top: cardHeight * 2,
+//   behavior: 'smooth',
+// });
