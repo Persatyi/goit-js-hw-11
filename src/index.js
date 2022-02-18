@@ -14,7 +14,7 @@ searchFormRef.addEventListener('submit', searchPicture);
 let inputValue = '';
 let page = 1;
 
-function searchPicture(e) {
+async function searchPicture(e) {
   e.preventDefault();
 
   inputValue = searchInputRef.value.trim();
@@ -28,30 +28,32 @@ function searchPicture(e) {
   hideLoadMoreBtn();
   clearPage();
 
-  fetchImages(inputValue, page)
-    .then(response => {
-      if (response.hits.length === 0) {
-        Notify.failure('Sorry, there are no images matching your search query. Please try again.');
-        return;
-      }
+  try {
+    const response = await fetchImages(inputValue, page);
+    if (response.hits.length === 0) {
+      Notify.failure('Sorry, there are no images matching your search query. Please try again.');
+      return;
+    }
 
-      renderGallery(response.hits);
+    renderGallery(response.hits);
 
-      Notify.success(`Hooray! We found ${response.totalHits} images.`);
+    Notify.success(`Hooray! We found ${response.totalHits} images.`);
 
-      if (response.hits.length < 40) {
-        return;
-      }
-      loadMoreBtn();
-    })
-    .catch(error => Notify.failure('Sorry, something went wrong. Please try again.'));
+    if (response.hits.length < 40) {
+      return;
+    }
+
+    loadMoreBtn();
+  } catch (error) {
+    Notify.failure('Sorry, something went wrong. Please try again.');
+  }
 }
 
 function renderGallery(array) {
   const markup = array
     .map(({ webformatURL, largeImageURL, tags, likes, views, comments, downloads }) => {
       return `<div class="photo-card">
-                <a href="${largeImageURL}">
+                <a class="photo-wrap" href="${largeImageURL}">
                 <img src="${webformatURL}" alt="${tags}" loading="lazy" width="300"/>
                 </a>
                 <div class="info">

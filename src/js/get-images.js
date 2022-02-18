@@ -18,12 +18,21 @@ const PER_PAGE = 'per_page=40';
 //   );
 // };
 
-const fetchImages = (value, page) => {
-  return axios
-    .get(`?${API_KEY}&q=${value}&${PARAMETERS}&page=${page}&${PER_PAGE}`)
-    .then(response => {
-      return response.data;
-    });
+////////////////////////////////axios///////////////////////////////////////////////////
+
+// const fetchImages = (value, page) => {
+//   return axios
+//     .get(`?${API_KEY}&q=${value}&${PARAMETERS}&page=${page}&${PER_PAGE}`)
+//     .then(response => {
+//       return response.data;
+//     });
+// };
+
+///////////////////////////////////////async - axios/////////////////////////////////////////
+
+const fetchImages = async (value, page) => {
+  const response = await axios.get(`?${API_KEY}&q=${value}&${PARAMETERS}&page=${page}&${PER_PAGE}`);
+  return response.data;
 };
 
 export { fetchImages };
