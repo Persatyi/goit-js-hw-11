@@ -30,7 +30,6 @@ async function searchPicture(e) {
   page = 1;
   hideLoadMoreBtn();
   clearPage();
-  window.addEventListener('scroll', debounce(onScroll, 200));
 
   try {
     const response = await fetchImages(inputValue, page);
@@ -40,6 +39,7 @@ async function searchPicture(e) {
     }
 
     renderGallery(response.hits);
+    window.addEventListener('scroll', debounce(onScroll, 200));
 
     Notify.success(`Hooray! We found ${response.totalHits} images.`);
 
@@ -88,25 +88,40 @@ function clearPage() {
 
 loadMoreBtnRef.addEventListener('click', loadMorePictures);
 
-function loadMorePictures() {
+async function loadMorePictures() {
   page += 1;
   loadMoreBtnRef.disabled = true;
   lightbox.refresh();
-  fetchImages(inputValue, page)
-    .then(response => {
-      renderGallery(response.hits);
+  try {
+    const response = await fetchImages(inputValue, page);
 
-      if (response.hits.length < 40) {
-        hideLoadMoreBtn();
-        window.removeEventListener('scroll', onScroll);
-        Notify.info("We're sorry, but you've reached the end of search results.");
-        return;
-      }
-      loadMoreBtn();
-    })
-    .catch(error =>
-      Notify.failure('Sorry, there are no images matching your search query. Please try again.'),
-    );
+    renderGallery(response.hits);
+
+    if (response.hits.length < 40) {
+      hideLoadMoreBtn();
+      window.removeEventListener('scroll', onScroll);
+      Notify.info("We're sorry, but you've reached the end of search results.");
+      return;
+    }
+    loadMoreBtn();
+  } catch (error) {
+    Notify.failure('Sorry, there are no images matching your search query. Please try again.');
+  }
+  // fetchImages(inputValue, page)
+  //   .then(response => {
+  //     renderGallery(response.hits);
+
+  //     if (response.hits.length < 40) {
+  //       hideLoadMoreBtn();
+  //       window.removeEventListener('scroll', onScroll);
+  //       Notify.info("We're sorry, but you've reached the end of search results.");
+  //       return;
+  //     }
+  //     loadMoreBtn();
+  //   })
+  //   .catch(error =>
+  //     Notify.failure('Sorry, there are no images matching your search query. Please try again.'),
+  //   );
 }
 
 function loadMoreBtn() {
