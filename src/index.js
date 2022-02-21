@@ -14,7 +14,15 @@ searchFormRef.addEventListener('submit', searchPicture);
 
 let inputValue = '';
 let page = 1;
-let totalHits = 0;
+
+const onScroll = debounce(() => {
+  const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+  const gallerySize = galleryRef.getBoundingClientRect();
+
+  if (gallerySize.height - 700 < scrollTop) {
+    loadMorePictures();
+  }
+}, 200);
 
 async function searchPicture(e) {
   e.preventDefault();
@@ -39,11 +47,11 @@ async function searchPicture(e) {
     }
 
     renderGallery(response.hits);
-    window.addEventListener('scroll', debounce(onScroll, 200));
+    window.addEventListener('scroll', onScroll);
 
     Notify.success(`Hooray! We found ${response.totalHits} images.`);
 
-    if (response.hits.length < 40) {
+    if (response.totalHits <= page * 40) {
       return;
     }
 
@@ -91,13 +99,14 @@ loadMoreBtnRef.addEventListener('click', loadMorePictures);
 async function loadMorePictures() {
   page += 1;
   loadMoreBtnRef.disabled = true;
-  lightbox.refresh();
+
   try {
     const response = await fetchImages(inputValue, page);
 
     renderGallery(response.hits);
+    lightbox.refresh();
 
-    if (response.hits.length < 40) {
+    if (response.totalHits <= page * 40) {
       hideLoadMoreBtn();
       window.removeEventListener('scroll', onScroll);
       Notify.info("We're sorry, but you've reached the end of search results.");
@@ -139,14 +148,14 @@ const lightbox = new SimpleLightbox('.photo-card a', {
   captionDelay: 250,
 });
 
-function onScroll(e) {
-  const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-  const cardHeight = galleryRef.getBoundingClientRect();
+// function onScroll() {
+//   const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+//   const gallerySize = galleryRef.getBoundingClientRect();
 
-  if (cardHeight.height - 700 < scrollTop) {
-    loadMorePictures();
-  }
-}
+//   if (gallerySize.height - 700 < scrollTop) {
+//     loadMorePictures();
+//   }
+// }
 
 // window.scrollBy({
 //   top: cardHeight * 2,
